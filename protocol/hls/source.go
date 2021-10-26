@@ -3,14 +3,17 @@ package hls
 import (
 	"bytes"
 	"fmt"
-	"github.com/gwuhaolin/livego/configure"
+	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/gwuhaolin/livego/av"
+	"github.com/gwuhaolin/livego/configure"
 	"github.com/gwuhaolin/livego/container/flv"
 	"github.com/gwuhaolin/livego/container/ts"
 	"github.com/gwuhaolin/livego/parser"
 
+	ffmpeg "github.com/modfy/fluent-ffmpeg"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -191,12 +194,30 @@ func (source *Source) cut() {
 	newf := true
 	if source.btswriter == nil {
 		source.btswriter = bytes.NewBuffer(nil)
-	} else if source.btswriter != nil && source.stat.durationMs() >= duration {
+	}
+
+	if source.stat.durationMs() >= duration {
 		source.flushAudio()
 
 		source.seq++
 		filename := fmt.Sprintf("/%s/%d.ts", source.info.Key, time.Now().Unix())
 		item := NewTSItem(filename, int(source.stat.durationMs()), source.seq, source.btswriter.Bytes())
+
+		opts := []string{
+			"-vf", "scale=256:144",
+		}
+
+		outFile := filepath.Join(os.TempDir(), filename)
+
+		if err := ffmpeg.NewCommand("").
+			PipeInput(bytes.NewReader(item.Data)).
+			OutputOptions(opts...).
+			OutputPath(outFile).
+			Overwrite(true).
+			Run(); err != nil {
+			log.Warn(err)
+		}
+
 		source.tsCache.SetItem(filename, item)
 
 		source.btswriter.Reset()
@@ -204,6 +225,7 @@ func (source *Source) cut() {
 	} else {
 		newf = false
 	}
+
 	if newf {
 		source.btswriter.Write(source.muxer.PAT())
 		source.btswriter.Write(source.muxer.PMT(av.SOUND_AAC, true))
@@ -254,6 +276,7 @@ func (source *Source) calcPtsDts(isVideo bool, ts, compositionTs uint32) {
 		source.pts = source.dts
 	}
 }
+
 func (source *Source) flushAudio() error {
 	return source.muxAudio(1)
 }
