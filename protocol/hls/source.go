@@ -3,8 +3,6 @@ package hls
 import (
 	"bytes"
 	"fmt"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/gwuhaolin/livego/av"
@@ -13,7 +11,6 @@ import (
 	"github.com/gwuhaolin/livego/container/ts"
 	"github.com/gwuhaolin/livego/parser"
 
-	ffmpeg "github.com/modfy/fluent-ffmpeg"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -58,6 +55,7 @@ func NewSource(info av.Info) *Source {
 		bwriter:     bytes.NewBuffer(make([]byte, 100*1024)),
 		packetQueue: make(chan *av.Packet, maxQueueNum),
 	}
+
 	go func() {
 		err := s.SendPacket()
 		if err != nil {
@@ -190,7 +188,7 @@ func (source *Source) Close(err error) {
 	source.closed = true
 }
 
-func (source *Source) cut() {
+func (source *Source) cut() error {
 	newf := true
 	if source.btswriter == nil {
 		source.btswriter = bytes.NewBuffer(nil)
@@ -198,26 +196,17 @@ func (source *Source) cut() {
 
 	if source.stat.durationMs() >= duration {
 		source.flushAudio()
-
 		source.seq++
+
 		filename := fmt.Sprintf("/%s/%d.ts", source.info.Key, time.Now().Unix())
+
+		res, err := transcode(filename, source.btswriter.Bytes())
+		if err != nil {
+			return err
+		}
+		source.btswriter = bytes.NewBuffer(res)
+
 		item := NewTSItem(filename, int(source.stat.durationMs()), source.seq, source.btswriter.Bytes())
-
-		opts := []string{
-			"-vf", "scale=256:144",
-		}
-
-		outFile := filepath.Join(os.TempDir(), filename)
-
-		if err := ffmpeg.NewCommand("").
-			PipeInput(bytes.NewReader(item.Data)).
-			OutputOptions(opts...).
-			OutputPath(outFile).
-			Overwrite(true).
-			Run(); err != nil {
-			log.Warn(err)
-		}
-
 		source.tsCache.SetItem(filename, item)
 
 		source.btswriter.Reset()
@@ -230,6 +219,7 @@ func (source *Source) cut() {
 		source.btswriter.Write(source.muxer.PAT())
 		source.btswriter.Write(source.muxer.PMT(av.SOUND_AAC, true))
 	}
+	return nil
 }
 
 func (source *Source) parse(p *av.Packet) (int32, bool, error) {
@@ -261,7 +251,9 @@ func (source *Source) parse(p *av.Packet) (int32, bool, error) {
 	p.Data = source.bwriter.Bytes()
 
 	if p.IsVideo && vh.IsKeyFrame() {
-		source.cut()
+		if err := source.cut(); err != nil {
+			return compositionTime, false, err
+		}
 	}
 	return compositionTime, false, nil
 }

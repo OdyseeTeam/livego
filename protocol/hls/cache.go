@@ -7,13 +7,9 @@ import (
 	"sync"
 )
 
-const (
-	maxTSCacheNum = 3
-)
+const maxTSCacheNum = 3
 
-var (
-	ErrNoKey = fmt.Errorf("No key for cache")
-)
+var ErrNoKey = fmt.Errorf("No key for cache")
 
 type TSCacheItem struct {
 	id   string
