@@ -68,8 +68,9 @@ func transcode(filename string, source []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	for range res.Progress {
+	for p := range res.Progress {
 		// drain the channel until its closed
+		log.Debug(p.GetProgress())
 	}
 	log.Debug("transcoding done")
 

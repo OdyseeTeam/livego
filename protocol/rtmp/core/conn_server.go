@@ -17,9 +17,7 @@ var (
 	publishAppend = "append"
 )
 
-var (
-	ErrReq = fmt.Errorf("req error")
-)
+var ErrReq = fmt.Errorf("req error")
 
 var (
 	cmdConnect       = "connect"

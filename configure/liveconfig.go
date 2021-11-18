@@ -39,6 +39,7 @@ type JWT struct {
 	Secret    string `mapstructure:"secret"`
 	Algorithm string `mapstructure:"algorithm"`
 }
+
 type ServerCfg struct {
 	Level           string       `mapstructure:"level"`
 	ConfigFile      string       `mapstructure:"config_file"`
@@ -62,8 +63,8 @@ type ServerCfg struct {
 // default config
 var defaultConf = ServerCfg{
 	ConfigFile:      "livego.yaml",
-	FLVArchive:	false,
-	RTMPNoAuth:	false,
+	FLVArchive:      false,
+	RTMPNoAuth:      false,
 	RTMPAddr:        ":1935",
 	HTTPFLVAddr:     ":7001",
 	HLSAddr:         ":7002",

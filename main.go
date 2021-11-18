@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"net"
+	"path"
+	"runtime"
+	"time"
+
 	"github.com/gwuhaolin/livego/configure"
 	"github.com/gwuhaolin/livego/protocol/api"
 	"github.com/gwuhaolin/livego/protocol/hls"
 	"github.com/gwuhaolin/livego/protocol/httpflv"
 	"github.com/gwuhaolin/livego/protocol/rtmp"
-	"net"
-	"path"
-	"runtime"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )

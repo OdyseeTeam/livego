@@ -2,12 +2,11 @@ package flv
 
 import (
 	"fmt"
+
 	"github.com/gwuhaolin/livego/av"
 )
 
-var (
-	ErrAvcEndSEQ = fmt.Errorf("avc end sequence")
-)
+var ErrAvcEndSEQ = fmt.Errorf("avc end sequence")
 
 type Demuxer struct {
 }

@@ -19,13 +19,13 @@ type StaticPush struct {
 	startflag     bool
 }
 
-var G_StaticPushMap = make(map[string](*StaticPush))
-var g_MapLock = new(sync.RWMutex)
-var G_PushUrlList []string = nil
-
 var (
-	STATIC_RELAY_STOP_CTRL = "STATIC_RTMPRELAY_STOP"
+	G_StaticPushMap          = make(map[string](*StaticPush))
+	g_MapLock                = new(sync.RWMutex)
+	G_PushUrlList   []string = nil
 )
+
+var STATIC_RELAY_STOP_CTRL = "STATIC_RTMPRELAY_STOP"
 
 func GetStaticPushList(appname string) ([]string, error) {
 	if G_PushUrlList == nil {
@@ -148,9 +148,9 @@ func (self *StaticPush) sendPacket(p *av.Packet) {
 	cs.Length = uint32(len(p.Data))
 	cs.StreamID = self.connectClient.GetStreamId()
 	cs.Timestamp = p.TimeStamp
-	//cs.Timestamp += v.BaseTimeStamp()
+	// cs.Timestamp += v.BaseTimeStamp()
 
-	//log.Printf("Static sendPacket: rtmpurl=%s, length=%d, streamid=%d",
+	// log.Printf("Static sendPacket: rtmpurl=%s, length=%d, streamid=%d",
 	//	self.RtmpUrl, len(p.Data), cs.StreamID)
 	if p.IsVideo {
 		cs.TypeID = av.TAG_VIDEO

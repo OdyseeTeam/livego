@@ -174,8 +174,10 @@ func (server *Server) GetLiveStatics(w http.ResponseWriter, req *http.Request) {
 					switch s.GetReader().(type) {
 					case *rtmp.VirReader:
 						v := s.GetReader().(*rtmp.VirReader)
-						msg := stream{key.(string), v.Info().URL, v.ReadBWInfo.StreamId, v.ReadBWInfo.VideoDatainBytes, v.ReadBWInfo.VideoSpeedInBytesperMS,
-							v.ReadBWInfo.AudioDatainBytes, v.ReadBWInfo.AudioSpeedInBytesperMS}
+						msg := stream{
+							key.(string), v.Info().URL, v.ReadBWInfo.StreamId, v.ReadBWInfo.VideoDatainBytes, v.ReadBWInfo.VideoSpeedInBytesperMS,
+							v.ReadBWInfo.AudioDatainBytes, v.ReadBWInfo.AudioSpeedInBytesperMS,
+						}
 						msgs.Publishers = append(msgs.Publishers, msg)
 					}
 				}
@@ -191,8 +193,10 @@ func (server *Server) GetLiveStatics(w http.ResponseWriter, req *http.Request) {
 						switch pw.GetWriter().(type) {
 						case *rtmp.VirWriter:
 							v := pw.GetWriter().(*rtmp.VirWriter)
-							msg := stream{key.(string), v.Info().URL, v.WriteBWInfo.StreamId, v.WriteBWInfo.VideoDatainBytes, v.WriteBWInfo.VideoSpeedInBytesperMS,
-								v.WriteBWInfo.AudioDatainBytes, v.WriteBWInfo.AudioSpeedInBytesperMS}
+							msg := stream{
+								key.(string), v.Info().URL, v.WriteBWInfo.StreamId, v.WriteBWInfo.VideoDatainBytes, v.WriteBWInfo.VideoSpeedInBytesperMS,
+								v.WriteBWInfo.AudioDatainBytes, v.WriteBWInfo.AudioSpeedInBytesperMS,
+							}
 							msgs.Players = append(msgs.Players, msg)
 						}
 					}
@@ -202,7 +206,7 @@ func (server *Server) GetLiveStatics(w http.ResponseWriter, req *http.Request) {
 			return true
 		})
 	} else {
-        // Warning: The room should be in the "live/stream" format!
+		// Warning: The room should be in the "live/stream" format!
 		roomInfo, exists := (rtmpStream.GetStreams()).Load(room)
 		if exists == false {
 			res.Status = 404
@@ -215,8 +219,10 @@ func (server *Server) GetLiveStatics(w http.ResponseWriter, req *http.Request) {
 				switch s.GetReader().(type) {
 				case *rtmp.VirReader:
 					v := s.GetReader().(*rtmp.VirReader)
-					msg := stream{room, v.Info().URL, v.ReadBWInfo.StreamId, v.ReadBWInfo.VideoDatainBytes, v.ReadBWInfo.VideoSpeedInBytesperMS,
-						v.ReadBWInfo.AudioDatainBytes, v.ReadBWInfo.AudioSpeedInBytesperMS}
+					msg := stream{
+						room, v.Info().URL, v.ReadBWInfo.StreamId, v.ReadBWInfo.VideoDatainBytes, v.ReadBWInfo.VideoSpeedInBytesperMS,
+						v.ReadBWInfo.AudioDatainBytes, v.ReadBWInfo.AudioSpeedInBytesperMS,
+					}
 					msgs.Publishers = append(msgs.Publishers, msg)
 				}
 			}
@@ -227,8 +233,10 @@ func (server *Server) GetLiveStatics(w http.ResponseWriter, req *http.Request) {
 						switch pw.GetWriter().(type) {
 						case *rtmp.VirWriter:
 							v := pw.GetWriter().(*rtmp.VirWriter)
-							msg := stream{room, v.Info().URL, v.WriteBWInfo.StreamId, v.WriteBWInfo.VideoDatainBytes, v.WriteBWInfo.VideoSpeedInBytesperMS,
-								v.WriteBWInfo.AudioDatainBytes, v.WriteBWInfo.AudioSpeedInBytesperMS}
+							msg := stream{
+								room, v.Info().URL, v.WriteBWInfo.StreamId, v.WriteBWInfo.VideoDatainBytes, v.WriteBWInfo.VideoSpeedInBytesperMS,
+								v.WriteBWInfo.AudioDatainBytes, v.WriteBWInfo.AudioSpeedInBytesperMS,
+							}
 							msgs.Players = append(msgs.Players, msg)
 						}
 					}
@@ -238,7 +246,7 @@ func (server *Server) GetLiveStatics(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	//resp, _ := json.Marshal(msgs)
+	// resp, _ := json.Marshal(msgs)
 	res.Data = msgs
 }
 
@@ -396,7 +404,6 @@ func (s *Server) handleReset(w http.ResponseWriter, r *http.Request) {
 	}
 
 	msg, err := configure.RoomKeys.SetKey(room)
-
 	if err != nil {
 		msg = err.Error()
 		res.Status = 400

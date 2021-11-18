@@ -10,9 +10,7 @@ import (
 	"github.com/gwuhaolin/livego/parser/mp3"
 )
 
-var (
-	errNoAudio = fmt.Errorf("demuxer no audio")
-)
+var errNoAudio = fmt.Errorf("demuxer no audio")
 
 type CodecParser struct {
 	aac  *aac.Parser
@@ -35,7 +33,6 @@ func (codeParser *CodecParser) SampleRate() (int, error) {
 }
 
 func (codeParser *CodecParser) Parse(p *av.Packet, w io.Writer) (err error) {
-
 	switch p.IsVideo {
 	case true:
 		f, ok := p.Header.(av.VideoPacketHeader)

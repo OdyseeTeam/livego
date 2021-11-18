@@ -78,8 +78,10 @@ type Encoder struct {
 
 type Version uint8
 
-type Array []interface{}
-type Object map[string]interface{}
+type (
+	Array  []interface{}
+	Object map[string]interface{}
+)
 
 type TypedObject struct {
 	Type   string

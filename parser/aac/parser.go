@@ -27,7 +27,7 @@ var aacRates = []int{96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 160
 
 var (
 	specificBufInvalid = fmt.Errorf("audio mpegspecific error")
-	audioBufInvalid    = fmt.Errorf("audiodata  invalid")
+	audioBufInvalid    = fmt.Errorf("audiodata invalid")
 )
 
 const (
@@ -66,7 +66,7 @@ func (parser *Parser) adts(src []byte, w io.Writer) error {
 
 	frameLen := uint16(len(src)) + 7
 
-	//first write adts header
+	// first write adts header
 	parser.adtsHeader[0] = 0xff
 	parser.adtsHeader[1] = 0xf1
 
@@ -103,12 +103,13 @@ func (parser *Parser) SampleRate() int {
 	return rate
 }
 
-func (parser *Parser) Parse(b []byte, packetType uint8, w io.Writer) (err error) {
+func (parser *Parser) Parse(b []byte, packetType uint8, w io.Writer) error {
 	switch packetType {
 	case av.AAC_SEQHDR:
-		err = parser.specificInfo(b)
+		return parser.specificInfo(b)
 	case av.AAC_RAW:
-		err = parser.adts(b, w)
+		return parser.adts(b, w)
+	default:
+		return nil
 	}
-	return
 }

@@ -3,8 +3,9 @@ package rtmprelay
 import (
 	"bytes"
 	"fmt"
-	"github.com/gwuhaolin/livego/av"
 	"io"
+
+	"github.com/gwuhaolin/livego/av"
 
 	"github.com/gwuhaolin/livego/protocol/amf"
 	"github.com/gwuhaolin/livego/protocol/rtmp/core"
@@ -12,9 +13,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var (
-	STOP_CTRL = "RTMPRELAY_STOP"
-)
+var STOP_CTRL = "RTMPRELAY_STOP"
 
 type RtmpRelay struct {
 	PlayUrl              string
@@ -53,7 +52,7 @@ func (self *RtmpRelay) rcvPlayChunkStream() {
 		if err != nil && err == io.EOF {
 			break
 		}
-		//log.Debugf("connectPlayClient.Read return rc.TypeID=%v length=%d, err=%v", rc.TypeID, len(rc.Data), err)
+		// log.Debugf("connectPlayClient.Read return rc.TypeID=%v length=%d, err=%v", rc.TypeID, len(rc.Data), err)
 		switch rc.TypeID {
 		case 20, 17:
 			r := bytes.NewReader(rc.Data)
@@ -72,7 +71,7 @@ func (self *RtmpRelay) sendPublishChunkStream() {
 	for {
 		select {
 		case rc := <-self.cs_chan:
-			//log.Debugf("sendPublishChunkStream: rc.TypeID=%v length=%d", rc.TypeID, len(rc.Data))
+			// log.Debugf("sendPublishChunkStream: rc.TypeID=%v length=%d", rc.TypeID, len(rc.Data))
 			self.connectPublishClient.Write(rc)
 		case ctrlcmd := <-self.sndctrl_chan:
 			if ctrlcmd == STOP_CTRL {

@@ -76,7 +76,6 @@ func TestChunkRead1(t *testing.T) {
 	at.Equal(chunkinc.exted, true)
 	at.Equal(int(chunkinc.Timestamp), 5)
 	at.Equal(int(chunkinc.remain), 0)
-
 }
 
 func TestWriteChunk(t *testing.T) {

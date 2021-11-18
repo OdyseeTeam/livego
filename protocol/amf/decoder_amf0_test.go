@@ -514,7 +514,6 @@ func TestDecodeAmf0XmlDocument(t *testing.T) {
 }
 
 func TestDecodeAmf0TypedObject(t *testing.T) {
-
 	buf := bytes.NewReader([]byte{
 		0x10, 0x00, 0x0F, 'o', 'r', 'g',
 		'.', 'a', 'm', 'f', '.', 'A',

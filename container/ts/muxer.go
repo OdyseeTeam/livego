@@ -73,22 +73,22 @@ func (muxer *Muxer) Mux(p *av.Packet, w io.Writer) error {
 
 		i := byte(0)
 
-		//sync byte
+		// sync byte
 		muxer.tsPacket[i] = 0x47
 		i++
 
-		//error indicator, unit start indicator,ts priority,pid
-		muxer.tsPacket[i] = byte(pid >> 8) //pid high 5 bits
+		// error indicator, unit start indicator,ts priority,pid
+		muxer.tsPacket[i] = byte(pid >> 8) // pid high 5 bits
 		if first {
-			muxer.tsPacket[i] = muxer.tsPacket[i] | 0x40 //unit start indicator
+			muxer.tsPacket[i] = muxer.tsPacket[i] | 0x40 // unit start indicator
 		}
 		i++
 
-		//pid low 8 bits
+		// pid low 8 bits
 		muxer.tsPacket[i] = byte(pid)
 		i++
 
-		//scram control, adaptation control, counter
+		// scram control, adaptation control, counter
 		if p.IsVideo {
 			muxer.tsPacket[i] = 0x10 | byte(muxer.videoCc&0x0f)
 		} else {
@@ -96,7 +96,7 @@ func (muxer *Muxer) Mux(p *av.Packet, w io.Writer) error {
 		}
 		i++
 
-		//关键帧需要加pcr
+		// 关键帧需要加pcr
 		if first && p.IsVideo && videoH.IsKeyFrame() {
 			muxer.tsPacket[3] |= 0x20
 			muxer.tsPacket[i] = 7
@@ -107,14 +107,14 @@ func (muxer *Muxer) Mux(p *av.Packet, w io.Writer) error {
 			i += 6
 		}
 
-		//frame data
+		// frame data
 		if packetBytesLen >= tsDefaultDataLen {
 			dataLen = tsDefaultDataLen
 			if first {
 				dataLen -= (i - 4)
 			}
 		} else {
-			muxer.tsPacket[3] |= 0x20 //have adaptation
+			muxer.tsPacket[3] |= 0x20 // have adaptation
 			remainBytes := byte(0)
 			dataLen = byte(packetBytesLen)
 			if first {
@@ -158,7 +158,7 @@ func (muxer *Muxer) Mux(p *av.Packet, w io.Writer) error {
 	return nil
 }
 
-//PAT return pat data
+// PAT return pat data
 func (muxer *Muxer) PAT() []byte {
 	i := 0
 	remainByte := 0
@@ -207,8 +207,9 @@ func (muxer *Muxer) PMT(soundFormat byte, hasVideo bool) []byte {
 		pmtHeader[9] = 0x01
 		progInfo = []byte{0x0f, 0xe1, 0x01, 0xf0, 0x00}
 	} else {
-		progInfo = []byte{0x1b, 0xe1, 0x00, 0xf0, 0x00, //h264 or h265*
-			0x0f, 0xe1, 0x01, 0xf0, 0x00, //mp3 or aac
+		progInfo = []byte{
+			0x1b, 0xe1, 0x00, 0xf0, 0x00, // h264 or h265*
+			0x0f, 0xe1, 0x01, 0xf0, 0x00, // mp3 or aac
 		}
 	}
 	pmtHeader[2] = byte(len(progInfo) + 9 + 4)
@@ -288,9 +289,9 @@ type pesHeader struct {
 	data [tsPacketLen]byte
 }
 
-//pesPacket return pes packet
+// pesPacket return pes packet
 func (header *pesHeader) packet(p *av.Packet, pts, dts int64) error {
-	//PES header
+	// PES header
 	i := 0
 	header.data[i] = 0x00
 	i++
@@ -312,7 +313,7 @@ func (header *pesHeader) packet(p *av.Packet, pts, dts int64) error {
 	headerSize := ptslen
 	if p.IsVideo && pts != dts {
 		flag |= 0x40
-		headerSize += 5 //add dts
+		headerSize += 5 // add dts
 	}
 	size := len(p.Data) + headerSize + 3
 	if size > 0xffff {

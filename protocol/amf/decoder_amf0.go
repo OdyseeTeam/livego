@@ -104,7 +104,7 @@ func (d *Decoder) DecodeAmf0String(r io.Reader, decodeMarker bool) (result strin
 		return "", fmt.Errorf("decode amf0: unable to decode string length: %s", err)
 	}
 
-	var bytes = make([]byte, length)
+	bytes := make([]byte, length)
 	if bytes, err = ReadBytes(r, int(length)); err != nil {
 		return "", fmt.Errorf("decode amf0: unable to decode string value: %s", err)
 	}
@@ -147,7 +147,6 @@ func (d *Decoder) DecodeAmf0Object(r io.Reader, decodeMarker bool) (Object, erro
 	}
 
 	return result, nil
-
 }
 
 // marker: 1 byte 0x05
@@ -276,7 +275,7 @@ func (d *Decoder) DecodeAmf0LongString(r io.Reader, decodeMarker bool) (result s
 		return "", fmt.Errorf("decode amf0: unable to decode long string length: %s", err)
 	}
 
-	var bytes = make([]byte, length)
+	bytes := make([]byte, length)
 	if bytes, err = ReadBytes(r, int(length)); err != nil {
 		return "", fmt.Errorf("decode amf0: unable to decode long string value: %s", err)
 	}

@@ -19,13 +19,13 @@ const (
 	nalu_type_dpb        byte = 3  // slice_data_partition_b_layer_rbsp( )
 	nalu_type_dpc        byte = 4  // slice_data_partition_c_layer_rbsp( )
 	nalu_type_idr        byte = 5  // slice_layer_without_partitioning_rbsp( ),sliceheader
-	nalu_type_sei        byte = 6  //sei_rbsp( )
-	nalu_type_sps        byte = 7  //seq_parameter_set_rbsp( )
-	nalu_type_pps        byte = 8  //pic_parameter_set_rbsp( )
+	nalu_type_sei        byte = 6  // sei_rbsp( )
+	nalu_type_sps        byte = 7  // seq_parameter_set_rbsp( )
+	nalu_type_pps        byte = 8  // pic_parameter_set_rbsp( )
 	nalu_type_aud        byte = 9  // access_unit_delimiter_rbsp( )
-	nalu_type_eoesq      byte = 10 //end_of_seq_rbsp( )
-	nalu_type_eostream   byte = 11 //end_of_stream_rbsp( )
-	nalu_type_filler     byte = 12 //filler_data_rbsp( )
+	nalu_type_eoesq      byte = 10 // end_of_seq_rbsp( )
+	nalu_type_eostream   byte = 11 // end_of_stream_rbsp( )
+	nalu_type_filler     byte = 12 // filler_data_rbsp( )
 )
 
 const (
@@ -44,8 +44,10 @@ var (
 	naluBodyLenError  = fmt.Errorf("nalu body len error")
 )
 
-var startCode = []byte{0x00, 0x00, 0x00, 0x01}
-var naluAud = []byte{0x00, 0x00, 0x00, 0x01, 0x09, 0xf0}
+var (
+	startCode = []byte{0x00, 0x00, 0x00, 0x01}
+	naluAud   = []byte{0x00, 0x00, 0x00, 0x01, 0x09, 0xf0}
+)
 
 type Parser struct {
 	frameType    byte
@@ -54,15 +56,15 @@ type Parser struct {
 }
 
 type sequenceHeader struct {
-	configVersion        byte //8bits
-	avcProfileIndication byte //8bits
-	profileCompatility   byte //8bits
-	avcLevelIndication   byte //8bits
-	reserved1            byte //6bits
-	naluLen              byte //2bits
-	reserved2            byte //3bits
-	spsNum               byte //5bits
-	ppsNum               byte //8bits
+	configVersion        byte // 8bits
+	avcProfileIndication byte // 8bits
+	profileCompatility   byte // 8bits
+	avcLevelIndication   byte // 8bits
+	reserved1            byte // 6bits
+	naluLen              byte // 2bits
+	reserved2            byte // 3bits
+	spsNum               byte // 5bits
+	ppsNum               byte // 8bits
 	spsLen               int
 	ppsLen               int
 }
@@ -73,7 +75,7 @@ func NewParser() *Parser {
 	}
 }
 
-//return value 1:sps, value2 :pps
+// return value 1:sps, value2 :pps
 func (parser *Parser) parseSpecificInfo(src []byte) error {
 	if len(src) < 9 {
 		return decDataNil
@@ -90,7 +92,7 @@ func (parser *Parser) parseSpecificInfo(src []byte) error {
 	seq.naluLen = src[4]&0x03 + 1
 	seq.reserved2 = src[5] >> 5
 
-	//get sps
+	// get sps
 	seq.spsNum = src[5] & 0x1f
 	seq.spsLen = int(src[6])<<8 | int(src[7])
 
@@ -100,7 +102,7 @@ func (parser *Parser) parseSpecificInfo(src []byte) error {
 	sps = append(sps, startCode...)
 	sps = append(sps, src[8:(8+seq.spsLen)]...)
 
-	//get pps
+	// get pps
 	tmpBuf := src[(8 + seq.spsLen):]
 	if len(tmpBuf) < 4 {
 		return ppsHeaderError

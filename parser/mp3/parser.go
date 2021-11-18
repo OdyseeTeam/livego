@@ -18,6 +18,7 @@ func NewParser() *Parser {
 // '10' 32 kHz
 // '11' reserved
 var mp3Rates = []int{44100, 48000, 32000}
+
 var (
 	errMp3DataInvalid = fmt.Errorf("mp3data  invalid")
 	errIndexInvalid   = fmt.Errorf("invalid rate index")

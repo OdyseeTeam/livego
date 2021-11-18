@@ -38,7 +38,7 @@ func TestConnReadNormal(t *testing.T) {
 	at.Equal(int(c.TypeID), 9)
 }
 
-//交叉读音视频数据
+// 交叉读音视频数据
 func TestConnCrossReading(t *testing.T) {
 	at := assert.New(t)
 	data1 := make([]byte, 128)
@@ -50,21 +50,21 @@ func TestConnCrossReading(t *testing.T) {
 	audioData := []byte{
 		0x04, 0x00, 0x00, 0x00, 0x00, 0x01, 0x33, 0x08, 0x01, 0x00, 0x00, 0x00,
 	}
-	//video 1
+	// video 1
 	videoData = append(videoData, data1...)
-	//video 2
+	// video 2
 	videoData = append(videoData, 0xc6)
 	videoData = append(videoData, data1...)
-	//audio 1
+	// audio 1
 	videoData = append(videoData, audioData...)
 	videoData = append(videoData, data1...)
-	//audio 2
+	// audio 2
 	videoData = append(videoData, 0xc4)
 	videoData = append(videoData, data1...)
-	//video 3
+	// video 3
 	videoData = append(videoData, 0xc6)
 	videoData = append(videoData, data2...)
-	//audio 3
+	// audio 3
 	videoData = append(videoData, 0xc4)
 	videoData = append(videoData, data2...)
 
@@ -77,13 +77,13 @@ func TestConnCrossReading(t *testing.T) {
 		chunks:              make(map[uint32]ChunkStream),
 	}
 	var c ChunkStream
-	//video 1
+	// video 1
 	err := conn.Read(&c)
 	at.Equal(err, nil)
 	at.Equal(int(c.TypeID), 9)
 	at.Equal(len(c.Data), 307)
 
-	//audio2
+	// audio2
 	err = conn.Read(&c)
 	at.Equal(err, nil)
 	at.Equal(int(c.TypeID), 8)
@@ -176,9 +176,11 @@ func TestSetChunksize(t *testing.T) {
 	at.Equal(int(c.StreamID), 1)
 	at.Equal(len(c.Data), 307)
 
-	//设置chunksize
-	chunkBuf := []byte{0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x96}
+	// 设置chunksize
+	chunkBuf := []byte{
+		0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x01, 0x00, 0x00, 0x00, 0x00,
+		0x00, 0x00, 0x00, 0x96,
+	}
 	conn.rw = NewReadWriter(bytes.NewBuffer(chunkBuf), 1024)
 	err = conn.Read(&c)
 	at.Equal(err, nil)
@@ -228,7 +230,7 @@ func TestConnWrite(t *testing.T) {
 	conn.Flush()
 	at.Equal(wr.Bytes(), []byte{0x4, 0x0, 0x0, 0x28, 0x0, 0x0, 0x3, 0x8, 0x0, 0x0, 0x0, 0x0, 0x1, 0x2, 0x3})
 
-	//for type 1
+	// for type 1
 	wr.Reset()
 	c1 = ChunkStream{
 		Length:    4,
@@ -242,7 +244,7 @@ func TestConnWrite(t *testing.T) {
 	conn.Flush()
 	at.Equal(wr.Bytes(), []byte{0x4, 0x0, 0x0, 0x50, 0x0, 0x0, 0x4, 0x8, 0x0, 0x0, 0x0, 0x0, 0x1, 0x2, 0x3, 0x4})
 
-	//for type 2
+	// for type 2
 	wr.Reset()
 	c1.Timestamp = 160
 	err = conn.Write(&c1)

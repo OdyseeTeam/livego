@@ -36,7 +36,7 @@ func (chunkStream *ChunkStream) new(pool *pool.Pool) {
 }
 
 func (chunkStream *ChunkStream) writeHeader(w *ReadWriter) error {
-	//Chunk Basic Header
+	// Chunk Basic Header
 	h := chunkStream.Format << 6
 	switch {
 	case chunkStream.CSID < 64:
@@ -51,7 +51,7 @@ func (chunkStream *ChunkStream) writeHeader(w *ReadWriter) error {
 		w.WriteUintBE(h, 1)
 		w.WriteUintLE(chunkStream.CSID-64, 2)
 	}
-	//Chunk Message Header
+	// Chunk Message Header
 	ts := chunkStream.Timestamp
 	if chunkStream.Format == 3 {
 		goto END
@@ -73,7 +73,7 @@ func (chunkStream *ChunkStream) writeHeader(w *ReadWriter) error {
 	}
 	w.WriteUintLE(chunkStream.StreamID, 4)
 END:
-	//Extended Timestamp
+	// Extended Timestamp
 	if ts >= 0xffffff {
 		w.WriteUintBE(chunkStream.Timestamp, 4)
 	}
@@ -117,7 +117,6 @@ func (chunkStream *ChunkStream) writeChunk(w *ReadWriter, chunkSize int) error {
 	}
 
 	return nil
-
 }
 
 func (chunkStream *ChunkStream) readChunk(r *ReadWriter, chunkSize uint32, pool *pool.Pool) error {
