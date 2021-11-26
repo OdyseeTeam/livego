@@ -42,7 +42,6 @@ func (rs *RtmpStream) HandleReader(r av.ReadCloser) {
 			stream.Copy(ns)
 			stream = ns
 			rs.streams.Store(info.Key, ns)
-
 		}
 	} else {
 		stream = NewStream()
@@ -54,7 +53,6 @@ func (rs *RtmpStream) HandleReader(r av.ReadCloser) {
 
 		transcode480Key := filepath.Join("480", info.Key)
 		rs.streams.Store(transcode480Key, stream)
-
 	}
 
 	stream.AddReader(r)
@@ -316,6 +314,16 @@ func (s *Stream) SendStaticPush(packet av.Packet) {
 func (s *Stream) TransStart() {
 	s.isStart = true
 	var p av.Packet
+
+	// TODO(rnd): Temporary hack, fix this!
+	//
+	// we are sharing the reader to (currently) 3 separate
+	// writers. This will force the reader to start reading until all the
+	// writers are initialized
+	//
+	// option is to check all the writers by keys and wait (with small timeout)
+	// until all the writers are up.
+	time.Sleep(2 * time.Second)
 
 	log.Debugf("TransStart: %v", s.info)
 

@@ -69,8 +69,7 @@ type Packet struct {
 	Data       []byte
 }
 
-type PacketHeader interface {
-}
+type PacketHeader interface{}
 
 type AudioPacketHeader interface {
 	PacketHeader
@@ -105,6 +104,10 @@ type CodecParser interface {
 
 type GetWriter interface {
 	GetWriter(Info) WriteCloser
+}
+
+type GetWriters interface {
+	GetWriters(Info) []WriteCloser
 }
 
 type Handler interface {
